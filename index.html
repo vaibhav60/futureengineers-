@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Engineers Robotics Lab | Build · Code · Compete</title>
+  <meta name="description" content="Elite robotics classes for kids ages 6-16. Hands-on learning, Olympiad prep, and free demo classes. Book online today!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050a14;
+      --surface: #0d1829;
+      --surface2: #111f35;
+      --accent: #00d4ff;
+      --accent2: #7b2fff;
+      --accent3: #ff6b35;
+      --text: #e2eaf4;
+      --muted: #7a92b0;
+      --glow: 0 0 30px rgba(0,212,255,0.3);
+      --glow2: 0 0 30px rgba(123,47,255,0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── STARFIELD CANVAS ── */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 5%;
+      background: rgba(5,10,20,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,212,255,0.12);
+      transition: all 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.1em;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9em;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff !important;
+      padding: 9px 22px;
+      border-radius: 50px;
+      font-weight: 700 !important;
+      transition: opacity 0.2s, transform 0.2s !important;
+    }
+    .nav-cta:hover { opacity: 0.9; transform: scale(1.04); color: #fff !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--accent); border-radius: 2px; display: block; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 5% 80px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: 0.8em;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+    
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.8em, 8vw, 6em);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: clamp(1em, 2.5vw, 1.25em);
+      color: var(--muted);
+      max-width: 580px;
+      margin: 24px auto 0;
+      line-height: 1.7;
+      font-weight: 300;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 44px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: var(--glow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0,212,255,0.4); }
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      padding: 15px 34px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1em;
+      text-decoration: none;
+      border: 1.5px solid var(--accent);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-outline:hover { background: rgba(0,212,255,0.1); transform: translateY(-3px); }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 64px;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.4em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 0.82em; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72em;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: fadeUp 1s 1s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+      animation: scrollLine 2s infinite;
+    }
+    @keyframes scrollLine { 0%{opacity:0;transform:scaleY(0) translateY(-10px)} 40%{opacity:1;transform:scaleY(1)} 100%{opacity:0;transform:translateY(10px)} }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── SECTION SHARED ── */
+    section { position: relative; z-index: 1; padding: 100px 5%; max-width: 1280px; margin: 0 auto; }
+    .section-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72em;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8em, 4vw, 2.8em);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+    .section-sub {
+      color: var(--muted);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 60px;
+      font-size: 1.05em;
+      line-height: 1.7;
+    }
+
+    /* ── PROGRAMS ── */
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .program-card {
+      background: var(--surface);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .program-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: var(--glow);
+    }
+    .program-card.featured {
+      border-color: rgba(123,47,255,0.5);
+      position: relative;
+    }
+    .program-card.featured::before {
+      content: 'MOST POPULAR';
+      position: absolute;
+      top: 16px; right: 16px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.68em;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      z-index: 2;
+    }
+    .program-img-wrap {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    .program-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .program-card:hover .program-img-wrap img { transform: scale(1.06); }
+    .program-img-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 70%;
+      background: linear-gradient(to top, var(--surface), transparent);
+    }
+    .program-body { padding: 24px 26px 28px; }
+    .program-age {
+      display: inline-block;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: var(--accent);
+      font-size: 0.76em;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+    }
+    .program-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .program-card p { color: var(--muted); font-size: 0.9em; line-height: 1.65; margin-bottom: 18px; }
+    .program-features { list-style: none; margin-bottom: 22px; }
+    .program-features li {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.88em;
+      color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .program-features li::before {
+      content: '▸';
+      color: var(--accent);
+      font-size: 0.9em;
+      flex-shrink: 0;
+    }
+    .program-price {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .price-amount {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.9em;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .price-unit { color: var(--muted); font-size: 0.88em; }
+    .btn-card {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-card:hover { opacity: 0.88; transform: scale(1.02); }
+
+    /* ── SCHEDULE ── */
+    #schedule-section { background: none; }
+    .schedule-wrap {
+      background: var(--surface);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .schedule-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 18px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(0,212,255,0.05);
+    }
+    .tab-content { display: none; padding: 32px; }
+    .tab-content.active { display: block; }
+    .schedule-table { width: 100%; border-collapse: collapse; }
+    .schedule-table th {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72em;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .schedule-table td {
+      padding: 14px 16px;
+      font-size: 0.9em;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .schedule-table tr:hover td { background: rgba(0,212,255,0.03); }
+    .day-badge {
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+      font-size: 0.78em;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 50px;
+      white-space: nowrap;
+    }
+    .spots-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.82em;
+      padding: 3px 10px;
+      border-radius: 50px;
+    }
+    .spots-open { background: rgba(16,185,129,0.12); color: #10b981; }
+    .spots-limited { background: rgba(255,107,53,0.12); color: var(--accent3); }
+    .spots-full { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+    /* ── DEMO SECTION ── */
+    .demo-card {
+      background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(123,47,255,0.08) 100%);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 24px;
+      padding: 60px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .demo-card h2 { margin-bottom: 12px; }
+    .demo-price-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,107,53,0.12);
+      border: 1px solid rgba(255,107,53,0.3);
+      color: var(--accent3);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+      padding: 8px 20px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+    }
+    .demo-features-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 28px 0;
+    }
+    .demo-feat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9em;
+    }
+    .demo-feat .icon { color: var(--accent); font-size: 1.1em; }
+
+    /* ── BOOKING MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5,10,20,0.9);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform 0.3s;
+      position: relative;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: rgba(255,255,255,0.05);
+      border: none;
+      color: var(--muted);
+      font-size: 1.3em;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+    .modal h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .modal-sub { color: var(--muted); font-size: 0.9em; margin-bottom: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.82em;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95em;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+    }
+    .form-group select option { background: var(--surface); }
+    .form-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      margin: 24px 0;
+    }
+    .paypal-label {
+      text-align: center;
+      font-size: 0.82em;
+      color: var(--muted);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #paypal-button-container, #paypal-demo-container { min-height: 50px; }
+
+    /* ── SUCCESS STATE ── */
+    .booking-success {
+      text-align: center;
+      padding: 40px 20px;
+      display: none;
+    }
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2em;
+      margin: 0 auto 20px;
+      box-shadow: var(--glow);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .testimonial-card:hover { border-color: rgba(0,212,255,0.25); transform: translateY(-4px); }
+    .stars { color: #fbbf24; font-size: 0.9em; margin-bottom: 14px; letter-spacing: 2px; }
+    .testimonial-card p { color: var(--muted); font-size: 0.9em; line-height: 1.7; margin-bottom: 18px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.85em;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .author-name { font-weight: 600; font-size: 0.9em; }
+    .author-role { font-size: 0.78em; color: var(--muted); }
+
+    /* ── FAQ ── */
+    .faq-list { max-width: 720px; margin: 0 auto; }
+    .faq-item {
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item.open { border-color: rgba(0,212,255,0.3); }
+    .faq-q {
+      width: 100%;
+      background: var(--surface);
+      border: none;
+      color: var(--text);
+      padding: 20px 24px;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .faq-q .arrow {
+      color: var(--accent);
+      font-size: 1.1em;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+    .faq-item.open .faq-q .arrow { transform: rotate(90deg); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: rgba(0,212,255,0.02);
+    }
+    .faq-a-inner { padding: 0 24px 20px; color: var(--muted); font-size: 0.9em; line-height: 1.7; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: #030811;
+      border-top: 1px solid rgba(0,212,255,0.1);
+      padding: 60px 5% 32px;
+    }
+    .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.1em;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+    .footer-desc { color: var(--muted); font-size: 0.88em; line-height: 1.7; margin-bottom: 20px; }
+    .footer-social { display: flex; gap: 12px; }
+    .social-icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      font-size: 0.85em;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .social-icon:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+    .footer-col h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72em;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88em;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--text); }
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p { color: var(--muted); font-size: 0.82em; }
+
+    /* ── GRID OVERLAY ── */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(5,10,20,0.97); padding: 20px; gap: 16px; border-bottom: 1px solid rgba(0,212,255,0.12); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      h1 { font-size: 2.5em; }
+      .hero-stats { gap: 28px; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .demo-card { padding: 36px 24px; }
+      .modal { padding: 28px 20px; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="grid-overlay"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">FE ROBOTICS LAB</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#schedule-section">Schedule</a></li>
+    <li><a href="#demo">Free Demo</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#demo" class="nav-cta">Book Now</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">🤖 Now enrolling for Spring 2026</div>
+  <h1><span class="gradient-text">Future Engineers</span><br>Robotics Lab</h1>
+  <p class="hero-sub">Where kids ages 6–16 build robots, write code, and compete on the world stage. Hands-on. Project-based. Extraordinary.</p>
+  <div class="hero-btns">
+    <a href="#demo" class="btn-primary">🚀 Book Free Demo Class</a>
+    <a href="#programs" class="btn-outline">↓ Explore Programs</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Students Enrolled</div></div>
+    <div class="stat"><div class="stat-num">48</div><div class="stat-label">Olympiad Medals</div></div>
+    <div class="stat"><div class="stat-num">6–16</div><div class="stat-label">Age Range</div></div>
+    <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Parent Satisfaction</div></div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section id="programs" style="padding-top: 60px;">
+  <div class="section-label">Curriculum</div>
+  <h2>Choose Your <span class="gradient-text">Mission</span></h2>
+  <p class="section-sub">Three progressive tracks designed to take your child from curious beginner to championship-ready engineer.</p>
+  <div class="programs-grid">
+
+    <!-- Beginner -->
+    <div class="program-card">
+      <div class="program-img-wrap">
+        <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=800&q=80" alt="Beginner Robotics">
+        <div class="program-img-overlay"></div>
+      </div>
+      <div class="program-body">
+        <span class="program-age">AGES 6–8</span>
+        <h3>Beginner Robotics</h3>
+        <p>A playful introduction to building and programming using mBot. No experience needed — just curiosity!</p>
+        <ul class="program-features">
+          <li>8-week course · 1 session/week</li>
+          <li>mBot robot building</li>
+          <li>Drag-and-drop coding (Scratch)</li>
+          <li>Sensors & simple circuits</li>
+          <li>Certificate on completion</li>
+        </ul>
+        <div class="program-price">
+          <span class="price-amount">$120</span>
+          <span class="price-unit">/ session</span>
+        </div>
+        <button class="btn-card" onclick="openModal('Beginner Robotics (Ages 6–8)', 120)">Enroll Now →</button>
+      </div>
+    </div>
+
+    <!-- Intermediate (featured) -->
+    <div class="program-card featured">
+      <div class="program-img-wrap">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80" alt="Intermediate Robotics">
+        <div class="program-img-overlay"></div>
+      </div>
+      <div class="program-body">
+        <span class="program-age">AGES 8–12</span>
+        <h3>Intermediate Robotics</h3>
+        <p>Dive into Arduino, sensors, and real programming. Build robots that solve real-world problems.</p>
+        <ul class="program-features">
+          <li>10-week course · 1 session/week</li>
+          <li>Arduino microcontrollers</li>
+          <li>C++ programming basics</li>
+          <li>Ultrasonic & IR sensors</li>
+          <li>Mini competition at end</li>
+        </ul>
+        <div class="program-price">
+          <span class="price-amount">$120</span>
+          <span class="price-unit">/ session</span>
+        </div>
+        <button class="btn-card" onclick="openModal('Intermediate Robotics (Ages 8–12)', 120)">Enroll Now →</button>
+      </div>
+    </div>
+
+    <!-- Advanced -->
+    <div class="program-card">
+      <div class="program-img-wrap">
+        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80" alt="Advanced Robotics">
+        <div class="program-img-overlay"></div>
+      </div>
+      <div class="program-body">
+        <span class="program-age">AGES 12–16</span>
+        <h3>Advanced + Olympiad Prep</h3>
+        <p>Competitive robotics training. Advanced electronics, algorithms, and full Olympiad preparation.</p>
+        <ul class="program-features">
+          <li>12-week intensive · 2 sessions/week</li>
+          <li>ROS & advanced C++</li>
+          <li>PID control & computer vision</li>
+          <li>Official Olympiad prep</li>
+          <li>Team competition entry</li>
+        </ul>
+        <div class="program-price">
+          <span class="price-amount">$120</span>
+          <span class="price-unit">/ session</span>
+        </div>
+        <button class="btn-card" onclick="openModal('Advanced + Olympiad Prep (Ages 12–16)', 120)">Enroll Now →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule-section" style="max-width:1280px;margin:0 auto;padding:60px 5%;">
+  <div class="section-label">Calendar</div>
+  <h2>Weekly <span class="gradient-text">Schedule</span></h2>
+  <p class="section-sub">Flexible timeslots across the week. Choose what works best for your family.</p>
+  <div class="schedule-wrap">
+    <div class="schedule-tabs">
+      <button class="tab-btn active" onclick="switchTab('beginner', this)">Beginner (6–8)</button>
+      <button class="tab-btn" onclick="switchTab('intermediate', this)">Intermediate (8–12)</button>
+      <button class="tab-btn" onclick="switchTab('advanced', this)">Advanced (12–16)</button>
+    </div>
+
+    <div class="tab-content active" id="tab-beginner">
+      <table class="schedule-table">
+        <thead><tr><th>Day</th><th>Time</th><th>Duration</th><th>Instructor</th><th>Spots</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span class="day-badge">Monday</span></td><td>4:00 PM – 5:00 PM</td><td>60 min</td><td>Ms. Rivera</td><td><span class="spots-badge spots-open">● 4 open</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Beginner Robotics (Ages 6–8)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Wednesday</span></td><td>4:00 PM – 5:00 PM</td><td>60 min</td><td>Mr. Kim</td><td><span class="spots-badge spots-limited">● 2 left</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Beginner Robotics (Ages 6–8)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Saturday</span></td><td>10:00 AM – 11:00 AM</td><td>60 min</td><td>Ms. Rivera</td><td><span class="spots-badge spots-open">● 6 open</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Beginner Robotics (Ages 6–8)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Sunday</span></td><td>11:00 AM – 12:00 PM</td><td>60 min</td><td>Mr. Patel</td><td><span class="spots-badge spots-full">● Full</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;opacity:0.4;cursor:not-allowed" disabled>Full</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content" id="tab-intermediate">
+      <table class="schedule-table">
+        <thead><tr><th>Day</th><th>Time</th><th>Duration</th><th>Instructor</th><th>Spots</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span class="day-badge">Tuesday</span></td><td>4:30 PM – 6:00 PM</td><td>90 min</td><td>Mr. Kim</td><td><span class="spots-badge spots-open">● 5 open</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Intermediate Robotics (Ages 8–12)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Thursday</span></td><td>4:30 PM – 6:00 PM</td><td>90 min</td><td>Ms. Chen</td><td><span class="spots-badge spots-limited">● 1 left</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Intermediate Robotics (Ages 8–12)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Saturday</span></td><td>12:00 PM – 1:30 PM</td><td>90 min</td><td>Mr. Patel</td><td><span class="spots-badge spots-open">● 4 open</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Intermediate Robotics (Ages 8–12)', 120)">Book</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content" id="tab-advanced">
+      <table class="schedule-table">
+        <thead><tr><th>Day</th><th>Time</th><th>Duration</th><th>Instructor</th><th>Spots</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span class="day-badge">Monday</span></td><td>5:00 PM – 7:00 PM</td><td>120 min</td><td>Dr. Nguyen</td><td><span class="spots-badge spots-limited">● 2 left</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Advanced + Olympiad Prep (Ages 12–16)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Wednesday</span></td><td>5:00 PM – 7:00 PM</td><td>120 min</td><td>Dr. Nguyen</td><td><span class="spots-badge spots-open">● 3 open</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;" onclick="openModal('Advanced + Olympiad Prep (Ages 12–16)', 120)">Book</button></td></tr>
+          <tr><td><span class="day-badge">Saturday</span></td><td>2:00 PM – 4:00 PM</td><td>120 min</td><td>Ms. Chen</td><td><span class="spots-badge spots-full">● Full</span></td><td><button class="btn-card" style="width:auto;padding:7px 18px;font-size:0.82em;opacity:0.4;cursor:not-allowed" disabled>Full</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FREE DEMO -->
+<section id="demo" style="max-width:1280px;margin:0 auto;padding:60px 5%;">
+  <div class="demo-card">
+    <div class="demo-price-tag">🎉 FREE — No Credit Card Required</div>
+    <h2>Try a <span class="gradient-text">Demo Class</span> First</h2>
+    <p class="section-sub" style="margin-bottom:0">Not sure which program is right? Book a free 45-minute taster session and let your child experience the magic of robotics — zero commitment.</p>
+    <div class="demo-features-row">
+      <div class="demo-feat"><span class="icon">✓</span> 45-min hands-on session</div>
+      <div class="demo-feat"><span class="icon">✓</span> All equipment provided</div>
+      <div class="demo-feat"><span class="icon">✓</span> Expert instructor</div>
+      <div class="demo-feat"><span class="icon">✓</span> Parent Q&A included</div>
+    </div>
+    <button class="btn-primary" onclick="openDemoModal()" style="font-size:1.05em;padding:17px 40px;">
+      🚀 Reserve My Free Spot
+    </button>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" style="max-width:1280px;margin:0 auto;padding:60px 5%;">
+  <div class="section-label">Reviews</div>
+  <h2>What <span class="gradient-text">Parents Say</span></h2>
+  <p class="section-sub">Real stories from families who've seen the transformation.</p>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"My 8-year-old went from zero coding knowledge to building his own Arduino-controlled robot in 10 weeks. The instructors are patient, passionate, and truly inspiring."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">SM</div>
+        <div><div class="author-name">Sarah Mitchell</div><div class="author-role">Parent of Lucas, Age 8</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Enrolled my daughter in the Advanced track and she qualified for the Regional Olympiad in just her second semester. The preparation is world-class."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">JL</div>
+        <div><div class="author-name">James Liu</div><div class="author-role">Parent of Emma, Age 13</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"The free demo class sold us immediately. The facility is top-notch, the curriculum is rigorous, and our son now talks about being an engineer every single day!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">AP</div>
+        <div><div class="author-name">Anita Patel</div><div class="author-role">Parent of Rohan, Age 10</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="max-width:1280px;margin:0 auto;padding:60px 5%;">
+  <div class="section-label">Questions</div>
+  <h2>Frequently <span class="gradient-text">Asked</span></h2>
+  <p class="section-sub">Everything you need to know before enrolling.</p>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">Do kids need prior coding experience? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">No experience needed for Beginner or Intermediate tracks. We start from absolute zero and build up. For Advanced track, some basic programming familiarity is helpful but not required.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">What equipment do students need to bring? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Nothing! All robots, components, laptops, and materials are provided by the lab. Students just need to show up ready to learn. We do offer optional take-home kits for purchase.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">What happens if my child misses a class? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">We record all sessions and make them available to enrolled students. Missed classes can be made up in another time slot within the same week, subject to availability. We allow up to 2 make-up classes per course.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">How do payments work? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Payments are made per-session via PayPal (credit/debit card also accepted). You pay at the time of booking. We also offer multi-session bundles with a 10% discount. Refunds are available up to 48 hours before the class.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">What is the class size? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">We keep class sizes small — maximum 8 students per session — to ensure every child gets individual attention from the instructor. This is intentional and non-negotiable for us.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(this)">Where are classes held? <span class="arrow">▶</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Our main lab is located in the Chicago area. We also offer online sessions for students unable to attend in person. Online students receive a starter kit shipped to their home before their first class.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">FE ROBOTICS LAB</div>
+      <p class="footer-desc">Inspiring the next generation of engineers, coders, and innovators through hands-on robotics education.</p>
+      <div class="footer-social">
+        <a class="social-icon" href="#" title="Facebook">f</a>
+        <a class="social-icon" href="#" title="Instagram">in</a>
+        <a class="social-icon" href="#" title="YouTube">▶</a>
+        <a class="social-icon" href="#" title="WhatsApp">W</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Programs</h4>
+      <ul>
+        <li><a href="#programs">Beginner (6–8)</a></li>
+        <li><a href="#programs">Intermediate (8–12)</a></li>
+        <li><a href="#programs">Advanced (12–16)</a></li>
+        <li><a href="#demo">Free Demo</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Our Instructors</a></li>
+        <li><a href="#">Olympiad Results</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:hello@feroboticslab.com">hello@feroboticslab.com</a></li>
+        <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
+        <li><a href="#">Chicago, IL</a></li>
+        <li><a href="#">Mon–Sat, 9am–7pm</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Future Engineers Robotics Lab. All rights reserved.</p>
+    <p>Privacy Policy · Terms of Service</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     BOOKING MODAL (Paid Class)
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Enroll in <span class="gradient-text" id="modalProgram">Program</span></h3>
+    <p class="modal-sub">Fill in your details, then complete payment below to confirm your spot.</p>
+
+    <div id="bookingFormWrap">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Parent / Guardian Name</label>
+          <input type="text" id="parentName" placeholder="Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label>Child's Name</label>
+          <input type="text" id="childName" placeholder="Alex Smith" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Child's Age</label>
+          <input type="number" id="childAge" placeholder="9" min="5" max="18" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="+1 (234) 567-890" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="parent@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Preferred Schedule Slot</label>
+        <select id="scheduleSlot">
+          <option value="">Select a time slot</option>
+          <option>Monday 4:00 PM – 5:00 PM</option>
+          <option>Wednesday 4:00 PM – 5:00 PM</option>
+          <option>Saturday 10:00 AM – 11:00 AM</option>
+          <option>Tuesday 4:30 PM – 6:00 PM</option>
+          <option>Thursday 4:30 PM – 6:00 PM</option>
+          <option>Saturday 12:00 PM – 1:30 PM</option>
+          <option>Monday 5:00 PM – 7:00 PM</option>
+          <option>Wednesday 5:00 PM – 7:00 PM</option>
+          <option>Saturday 2:00 PM – 4:00 PM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message (optional)</label>
+        <textarea id="message" rows="2" placeholder="Any notes, allergies, or questions..."></textarea>
+      </div>
+      <hr class="form-divider">
+      <p class="paypal-label">Secure payment via PayPal</p>
+      <div id="paypal-button-container"></div>
+    </div>
+
+    <div class="booking-success" id="bookingSuccess">
+      <div class="success-icon">✓</div>
+      <h3>You're <span class="gradient-text">In!</span></h3>
+      <p style="color:var(--muted);margin-top:10px;line-height:1.6">Your spot has been reserved. A confirmation email is on its way. We can't wait to see your child build something amazing! 🤖</p>
+      <button class="btn-primary" onclick="closeModal()" style="margin-top:24px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     DEMO MODAL (Free)
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="demoModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDemoModal()">✕</button>
+    <h3>Reserve Your <span class="gradient-text">Free Demo</span></h3>
+    <p class="modal-sub">45 minutes of hands-on robotics fun — completely free, no strings attached.</p>
+
+    <div id="demoFormWrap">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Parent / Guardian Name</label>
+          <input type="text" id="dParentName" placeholder="Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label>Child's Name</label>
+          <input type="text" id="dChildName" placeholder="Alex Smith" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Child's Age</label>
+          <input type="number" id="dChildAge" placeholder="9" min="5" max="18" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="dPhone" placeholder="+1 (234) 567-890" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="dEmail" placeholder="parent@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Preferred Demo Date</label>
+        <input type="date" id="dDate">
+      </div>
+      <div class="form-group">
+        <label>Preferred Time</label>
+        <select id="dTime">
+          <option value="">Select preferred time</option>
+          <option>Morning (10am – 12pm)</option>
+          <option>Afternoon (1pm – 3pm)</option>
+          <option>Evening (4pm – 6pm)</option>
+        </select>
+      </div>
+      <hr class="form-divider">
+      <button class="btn-primary" onclick="submitDemo()" style="width:100%;justify-content:center;font-size:1em;">
+        🚀 Confirm Free Demo Booking
+      </button>
+      <p style="font-size:0.78em;color:var(--muted);text-align:center;margin-top:12px;">No payment required. We'll confirm via email within 24 hours.</p>
+    </div>
+
+    <div class="booking-success" id="demoSuccess">
+      <div class="success-icon">✓</div>
+      <h3>Demo <span class="gradient-text">Booked!</span></h3>
+      <p style="color:var(--muted);margin-top:10px;line-height:1.6">Amazing! We'll email you within 24 hours to confirm your slot. Get ready to build some robots! 🤖</p>
+      <button class="btn-primary" onclick="closeDemoModal()" style="margin-top:24px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════ -->
+<script>
+  /* ── STARFIELD ── */
+  (function() {
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 180; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2 + 0.2,
+          a: Math.random(),
+          da: (Math.random() - 0.5) * 0.004
+        });
+      }
+    }
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.a = Math.max(0.05, Math.min(1, s.a + s.da));
+        if (s.a <= 0.05 || s.a >= 1) s.da *= -1;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,220,255,${s.a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    resize();
+    initStars();
+    draw();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+  })();
+
+  /* ── NAV ── */
+  document.getElementById('hamburger').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  /* ── SCHEDULE TABS ── */
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ── FAQ ── */
+  function toggleFAQ(btn) {
+    const item = btn.parentElement;
+    const answer = item.querySelector('.faq-a');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-a').style.maxHeight = '0';
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  }
+
+  /* ── MODAL ── */
+  let currentProgram = '';
+  let currentPrice = 120;
+  let paypalRendered = false;
+
+  function openModal(program, price) {
+    currentProgram = program;
+    currentPrice = price;
+    document.getElementById('modalProgram').textContent = program;
+    document.getElementById('bookingModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (!paypalRendered) {
+      loadPayPal('paypal-button-container', price, function() {
+        document.getElementById('bookingFormWrap').style.display = 'none';
+        document.getElementById('bookingSuccess').style.display = 'block';
+      });
+      paypalRendered = true;
+    }
+  }
+  function closeModal() {
+    document.getElementById('bookingModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function openDemoModal() {
+    document.getElementById('demoModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDemoModal() {
+    document.getElementById('demoModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('bookingModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.getElementById('demoModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDemoModal();
+  });
+
+  function submitDemo() {
+    const name = document.getElementById('dParentName').value;
+    const child = document.getElementById('dChildName').value;
+    const email = document.getElementById('dEmail').value;
+    if (!name || !child || !email) {
+      alert('Please fill in your name, child\'s name, and email to continue.');
+      return;
+    }
+    document.getElementById('demoFormWrap').style.display = 'none';
+    document.getElementById('demoSuccess').style.display = 'block';
+  }
+
+  /* ── PAYPAL ── */
+  function loadPayPal(containerId, amount, onSuccess) {
+    const existing = document.querySelector('script[src*="paypal"]');
+    const init = () => {
+      if (typeof paypal === 'undefined') {
+        setTimeout(init, 200);
+        return;
+      }
+      paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'blue',
+          shape: 'pill',
+          label: 'pay'
+        },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              description: currentProgram + ' — Future Engineers Robotics Lab',
+              amount: { value: String(amount.toFixed(2)) }
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            onSuccess(details);
+          });
+        },
+        onError: function(err) {
+          console.error('PayPal error:', err);
+          alert('Payment failed. Please try again or contact us directly.');
+        }
+      }).render('#' + containerId);
+    };
+
+    if (!existing) {
+      const s = document.createElement('script');
+      s.src = 'https://www.paypal.com/sdk/js?client-id=sb&currency=USD';
+      s.onload = init;
+      document.body.appendChild(s);
+    } else {
+      init();
+    }
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.program-card, .testimonial-card, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
